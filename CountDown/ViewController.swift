@@ -32,12 +32,14 @@ class ViewController: UIViewController {
         }else{
             sender.titleLabel?.text = "STOP"
             running = true
-            startCount()
+            DispatchQueue.global().async {
+                self.startCount()
+            }
         }
         
         
     }
-    
+    		
     //This function
     func startCount(){
         
@@ -46,7 +48,10 @@ class ViewController: UIViewController {
         var countDown = COUNTDOWN
         
         while(countDown >= 0 && running){
-            displayLabel.text = String(countDown)
+            DispatchQueue.main.async {
+                //self.displayLabel.text = String(countDown)
+                self.updateDisplay(newValue: String(countDown))
+            }
             sleep(1)
             countDown -= 1
         }
@@ -56,13 +61,10 @@ class ViewController: UIViewController {
         //TODO show the alert
         if(countDown < 0){
             
-            let alert = UIAlertController.init(title: "BOOM!", message: "Acabó la cuenta atrás", preferredStyle: .alert)
-            
-            alert.addAction(UIAlertAction.init(title: "Ok", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-            
-            restartCountDown()
-            
+            DispatchQueue.main.async {
+                self.stopCount()
+            }
+ 
         }
     
     }
@@ -70,17 +72,31 @@ class ViewController: UIViewController {
     //This function stop the countwond
     func stopCount(){
         
+        let alert = UIAlertController.init(title: "BOOM!", message: "Acabó la cuenta atrás", preferredStyle: .alert)
+         
+         alert.addAction(UIAlertAction.init(title: "Ok", style: .default, handler: nil))
+         self.present(alert, animated: true, completion: nil)
+         
+         restartCountDown()
+        
         if(running){
             running = false
         }
         
     }
     
+    func updateDisplay(newValue: String){
+        
+        displayLabel.text = newValue
+        
+    }
+    
     //This function restart the timer
     func restartCountDown(){
         
-        let countDown = COUNTDOWN
-        displayLabel.text = String(countDown)
+        displayLabel.text = String(COUNTDOWN)
+        running = false
+        
     }
 
 
